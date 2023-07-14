@@ -1,7 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { createPlaylist, deletePlaylists, getPlaylists, isPlaylistAdded } from "./models/Playlist";
+import {
+  createPlaylist,
+  deletePlaylists,
+  getPlaylists,
+  isPlaylistAdded,
+} from "./models/Playlist";
 import { createUser } from "./models/User";
 import { User, Playlist, PrismaClient } from "@prisma/client";
 import { AppUser, PlaylistItem } from "./types";
@@ -46,9 +51,13 @@ app.post("/addPlaylistForNotify", async (req, res) => {
   const { playlistId, playlist, user } = req.body;
 
   try {
-    const playlistTrackIDs = playlist.items.map(
-      (item: PlaylistItem) => item.track.id
-    );
+    const playlistTrackIDs: string[] = playlist.items
+      .map((item: PlaylistItem) => {
+        if (item.track.id !== null && item.track.id !== undefined) {
+          return item.track.id;
+        }
+      })
+      .filter((id: string) => id !== undefined);
 
     const addPlaylist = {
       id: playlistId + user,
@@ -62,6 +71,7 @@ app.post("/addPlaylistForNotify", async (req, res) => {
 
     res.json(addedPlaylist);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: JSON.stringify(error) });
   }
 });
@@ -70,7 +80,6 @@ app.post("/getUserPlaylistsForNotify", async (req, res) => {
   const { user } = req.body;
 
   try {
-
     const playlists = await getPlaylists(user);
 
     res.status(200).json(playlists);
@@ -83,7 +92,6 @@ app.post("/isSavedPlaylistsForNotify", async (req, res) => {
   const { playlistId, userId } = req.body;
 
   try {
-
     const isSaved = await isPlaylistAdded(playlistId, userId);
 
     res.status(200).json(isSaved);
@@ -96,7 +104,6 @@ app.post("/deleteUserPlaylistsForNotify", async (req, res) => {
   const { playlistId, userId } = req.body;
 
   try {
-
     const deleted = await deletePlaylists(playlistId, userId);
 
     res.status(200).json(deleted);
@@ -104,4 +111,3 @@ app.post("/deleteUserPlaylistsForNotify", async (req, res) => {
     res.status(500).json({ error: JSON.stringify(error) });
   }
 });
-

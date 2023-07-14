@@ -1,18 +1,23 @@
 import { Playlist, PrismaClient } from "@prisma/client";
 import { AddPlaylist, AppUser } from "../types";
+import * as fs from 'node:fs';
+import path from "path";
 
 const prisma = new PrismaClient();
 
 const createPlaylist = async (playlist: AddPlaylist) => {
-  console.log(playlist);
   try {
     return await prisma.playlist.create({
       data: playlist,
     });
   } catch (error) {
-    // console.log(error);
+    const errorMessage = `Error in createPlaylist: ${error}`;
+    const filePath = path.join(__dirname, "error.txt");
+    fs.writeFileSync(filePath, errorMessage);
+    console.log(error);
   }
 };
+
 
 const getPlaylists = async (userId: string) => {
   try {

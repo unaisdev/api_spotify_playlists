@@ -7,7 +7,7 @@ const createUser = async (user: AppUser) => {
   return await prisma.user.create({
     data: {
       display_name: user.display_name,
-      followers_num: String(user.followers),
+      followers_num: String(user.followers.total),
       image: user.images[0].url,
       uri: user.uri,
       id: user.id,
