@@ -10,7 +10,7 @@ import {
 } from "./models/Playlist";
 import { createUser } from "./models/User";
 import { User, Playlist, PrismaClient } from "@prisma/client";
-import { AppUser, PlaylistItem } from "./types";
+import { AppUser, PlaylistItem, UpdatePlaylist } from "./types";
 
 const prisma = new PrismaClient();
 
@@ -90,7 +90,7 @@ app.post("/getUserPlaylistsForNotify", async (req, res) => {
 });
 
 app.post("/updateUserPlaylistsForNotify", async (req, res) => {
-  const { playlistId, playlist, user } = req.body;
+  const { playlistId, playlist, userId, last_update } = req.body;
 
   try {
     const playlistTrackIDs: string[] = playlist.items
@@ -101,19 +101,20 @@ app.post("/updateUserPlaylistsForNotify", async (req, res) => {
       })
       .filter((id: string) => id !== undefined);
 
-    const addPlaylist = {
-      id: playlistId + user,
+    const updatePlaylistItem = {
       playlistId: playlistId,
-      userId: user,
+      userId: userId,
       trackIds: playlistTrackIDs,
-      last_update: new Date(),
-    };
+      last_update: last_update,
+    } as UpdatePlaylist;
 
-    console.log(playlistId);
-    
-    const updatedPlaylist = await updatePlaylists(addPlaylist);
 
-    console.log(updatedPlaylist)
+    const updatedPlaylist = await updatePlaylists(
+      playlistId + userId,
+      updatePlaylistItem
+    );
+
+    console.log(updatedPlaylist);
     res.json(updatedPlaylist);
   } catch (error) {
     console.log(error);

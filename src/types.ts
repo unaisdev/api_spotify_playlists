@@ -25,6 +25,14 @@ export interface AddPlaylist {
   last_update: Date;
 };
 
+
+export interface UpdatePlaylist {
+  playlistId: string;
+  userId: string;
+  trackIds: string[];
+  last_update: Date;
+};
+
 interface Followers {
   href: string;
   total: number;

@@ -1,5 +1,5 @@
 import { Playlist, PrismaClient } from "@prisma/client";
-import { AddPlaylist, AppUser } from "../types";
+import { AddPlaylist, AppUser, UpdatePlaylist } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -21,20 +21,21 @@ const getPlaylists = async (userId: string) => {
       },
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
 };
 
-const updatePlaylists = async (playlist: AddPlaylist) => {
+const updatePlaylists = async (
+  playlistId: string,
+  playlist: UpdatePlaylist
+) => {
+  console.log(playlistId)
   try {
-    console.log(playlist.id)
     return await prisma.playlist.update({
       where: {
-        id: playlist.id,
-        userId: playlist.userId,
-        playlistId: playlist.playlistId,
+        id: playlistId,
       },
-      data: playlist
+      data: playlist,
     });
   } catch (error) {
     console.log(error);
@@ -71,4 +72,10 @@ const isPlaylistAdded = async (playlistId: string, userId: string) => {
   }
 };
 
-export { createPlaylist, getPlaylists, updatePlaylists, deletePlaylists, isPlaylistAdded };
+export {
+  createPlaylist,
+  getPlaylists,
+  updatePlaylists,
+  deletePlaylists,
+  isPlaylistAdded,
+};
