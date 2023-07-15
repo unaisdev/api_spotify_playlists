@@ -1,7 +1,5 @@
 import { Playlist, PrismaClient } from "@prisma/client";
 import { AddPlaylist, AppUser } from "../types";
-import * as fs from 'node:fs';
-import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -11,13 +9,9 @@ const createPlaylist = async (playlist: AddPlaylist) => {
       data: playlist,
     });
   } catch (error) {
-    const errorMessage = `Error in createPlaylist: ${error}`;
-    const filePath = path.join(__dirname, "error.txt");
-    fs.writeFileSync(filePath, errorMessage);
     console.log(error);
   }
 };
-
 
 const getPlaylists = async (userId: string) => {
   try {
@@ -31,6 +25,22 @@ const getPlaylists = async (userId: string) => {
   }
 };
 
+const updatePlaylists = async (playlist: AddPlaylist) => {
+  try {
+    console.log(playlist.id)
+    return await prisma.playlist.update({
+      where: {
+        id: playlist.id,
+        userId: playlist.userId,
+        playlistId: playlist.playlistId,
+      },
+      data: playlist
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const deletePlaylists = async (playlistId: string, userId: string) => {
   try {
     return await prisma.playlist.deleteMany({
@@ -40,7 +50,7 @@ const deletePlaylists = async (playlistId: string, userId: string) => {
       },
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
 };
 
@@ -57,8 +67,8 @@ const isPlaylistAdded = async (playlistId: string, userId: string) => {
 
     return false;
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
 };
 
-export { createPlaylist, getPlaylists, deletePlaylists, isPlaylistAdded };
+export { createPlaylist, getPlaylists, updatePlaylists, deletePlaylists, isPlaylistAdded };

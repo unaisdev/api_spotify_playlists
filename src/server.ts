@@ -6,6 +6,7 @@ import {
   deletePlaylists,
   getPlaylists,
   isPlaylistAdded,
+  updatePlaylists,
 } from "./models/Playlist";
 import { createUser } from "./models/User";
 import { User, Playlist, PrismaClient } from "@prisma/client";
@@ -84,6 +85,38 @@ app.post("/getUserPlaylistsForNotify", async (req, res) => {
 
     res.status(200).json(playlists);
   } catch (error) {
+    res.status(500).json({ error: JSON.stringify(error) });
+  }
+});
+
+app.post("/updateUserPlaylistsForNotify", async (req, res) => {
+  const { playlistId, playlist, user } = req.body;
+
+  try {
+    const playlistTrackIDs: string[] = playlist.items
+      .map((item: PlaylistItem) => {
+        if (item.track.id !== null && item.track.id !== undefined) {
+          return item.track.id;
+        }
+      })
+      .filter((id: string) => id !== undefined);
+
+    const addPlaylist = {
+      id: playlistId + user,
+      playlistId: playlistId,
+      userId: user,
+      trackIds: playlistTrackIDs,
+      last_update: new Date(),
+    };
+
+    console.log(playlistId);
+    
+    const updatedPlaylist = await updatePlaylists(addPlaylist);
+
+    console.log(updatedPlaylist)
+    res.json(updatedPlaylist);
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ error: JSON.stringify(error) });
   }
 });
