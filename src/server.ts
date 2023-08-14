@@ -15,7 +15,7 @@ import { AppUser, PlaylistItem, UpdatePlaylist } from "./types";
 const prisma = new PrismaClient();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT ?? 3000;
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
@@ -107,7 +107,6 @@ app.post("/updateUserPlaylistsForNotify", async (req, res) => {
       trackIds: playlistTrackIDs,
       last_update: last_update,
     } as UpdatePlaylist;
-
 
     const updatedPlaylist = await updatePlaylists(
       playlistId + userId,
