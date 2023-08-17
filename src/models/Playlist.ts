@@ -14,6 +14,7 @@ const createPlaylist = async (playlist: AddPlaylist) => {
 };
 
 const getPlaylists = async (userId: string) => {
+  console.log(userId + "getPlaylists");
   try {
     return await prisma.playlist.findMany({
       where: {
@@ -29,7 +30,7 @@ const updatePlaylists = async (
   playlistId: string,
   playlist: UpdatePlaylist
 ) => {
-  console.log(playlistId)
+  console.log(playlistId);
   try {
     return await prisma.playlist.update({
       where: {

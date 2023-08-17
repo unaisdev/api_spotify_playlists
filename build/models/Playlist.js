@@ -24,6 +24,7 @@ const createPlaylist = (playlist) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.createPlaylist = createPlaylist;
 const getPlaylists = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(userId + "getPlaylists");
     try {
         return yield prisma.playlist.findMany({
             where: {

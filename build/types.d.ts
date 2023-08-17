@@ -2,7 +2,10 @@ export interface AppUser {
     country: string;
     display_name: string;
     email: string;
-    followers: Followers;
+    followers: {
+        href: string;
+        total: number;
+    };
     href: string;
     id: string;
     images: [
@@ -28,10 +31,6 @@ export interface UpdatePlaylist {
     userId: string;
     trackIds: string[];
     last_update: Date;
-}
-interface Followers {
-    href: string;
-    total: number;
 }
 export interface PlaylistItem {
     added_at: string;

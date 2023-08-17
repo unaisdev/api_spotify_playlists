@@ -29,7 +29,8 @@ app.listen(port, () => {
     console.log(`Servidor iniciado en http://localhost:${port}`);
 });
 app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = req.body;
+    console.log("Calling /register endpoint");
+    const { user } = req.body;
     try {
         // Check if user already exists
         const existingUser = yield prisma.user.findUnique({
@@ -38,10 +39,12 @@ app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             },
         });
         if (existingUser) {
+            console.log("user exists!!!!!");
             return res.status(400).json({ error: "User already registered" });
         }
         // Create the user
         const addedUser = yield (0, User_1.createUser)(user);
+        console.log(addedUser);
         res.json(addedUser);
     }
     catch (error) {
@@ -49,9 +52,11 @@ app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.post("/addPlaylistForNotify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { playlistId, playlist, user } = req.body;
+    console.log("Calling /addPlaylistForNotify endpoint");
+    const { playlistId, tracks, userId } = req.body;
+    console.log(req.body);
     try {
-        const playlistTrackIDs = playlist.items
+        const playlistTrackIDs = tracks
             .map((item) => {
             if (item.track.id !== null && item.track.id !== undefined) {
                 return item.track.id;
@@ -59,9 +64,9 @@ app.post("/addPlaylistForNotify", (req, res) => __awaiter(void 0, void 0, void 0
         })
             .filter((id) => id !== undefined);
         const addPlaylist = {
-            id: playlistId + user,
+            id: playlistId + userId,
             playlistId: playlistId,
-            userId: user,
+            userId: userId,
             trackIds: playlistTrackIDs,
             last_update: new Date(),
         };
@@ -74,9 +79,12 @@ app.post("/addPlaylistForNotify", (req, res) => __awaiter(void 0, void 0, void 0
     }
 }));
 app.post("/getUserPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { user } = req.body;
+    console.log("Calling /getUserPlaylistsForNotify endpoint");
+    const { userId } = req.body;
+    console.log(userId);
     try {
-        const playlists = yield (0, Playlist_1.getPlaylists)(user);
+        const playlists = yield (0, Playlist_1.getPlaylists)(userId);
+        console.log(playlists);
         res.status(200).json(playlists);
     }
     catch (error) {
@@ -84,6 +92,7 @@ app.post("/getUserPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0, v
     }
 }));
 app.post("/updateUserPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Calling /updateUserPlaylistsForNotify endpoint");
     const { playlistId, playlist, userId, last_update } = req.body;
     try {
         const playlistTrackIDs = playlist.items
@@ -109,6 +118,7 @@ app.post("/updateUserPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0
     }
 }));
 app.post("/isSavedPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Calling /isSavedPlaylistsForNotify endpoint");
     const { playlistId, userId } = req.body;
     try {
         const isSaved = yield (0, Playlist_1.isPlaylistAdded)(playlistId, userId);
@@ -119,6 +129,7 @@ app.post("/isSavedPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0, v
     }
 }));
 app.post("/deleteUserPlaylistsForNotify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Calling /deleteUserPlaylistsForNotify endpoint");
     const { playlistId, userId } = req.body;
     try {
         const deleted = yield (0, Playlist_1.deletePlaylists)(playlistId, userId);
