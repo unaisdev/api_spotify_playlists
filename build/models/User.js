@@ -9,23 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPlaylists = exports.createPlaylist = void 0;
+exports.getUsers = exports.createUser = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const createPlaylist = (playlist) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma.playlist.create({
+const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma.user.create({
         data: {
-            id: playlist.id,
-            display_name: playlist.display_name,
-            followers_num: playlist.followers_num,
-            image: playlist.image,
-            uri: playlist.uri,
+            display_name: user.display_name,
+            followers_num: String(user.followers.total),
+            image: user.images[0].url,
+            uri: user.uri,
+            id: user.id,
         },
     });
 });
-exports.createPlaylist = createPlaylist;
-const getPlaylists = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma.playlist.findMany();
+exports.createUser = createUser;
+const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma.user.findMany();
 });
-exports.getPlaylists = getPlaylists;
-//# sourceMappingURL=Playlist.js.map
+exports.getUsers = getUsers;

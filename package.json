@@ -2,9 +2,11 @@
   "name": "api_spotify_playlists",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/server.js",
+  "main": "./build/server.js",
   "scripts": {
-    "start:dev": "npx nodemon"
+    "start": "node build/server.js",
+    "tsc": "tsc",
+    "start:prod": "node build/server.js"
   },
   "author": "",
   "license": "ISC",
