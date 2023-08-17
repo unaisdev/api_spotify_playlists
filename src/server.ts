@@ -26,8 +26,9 @@ app.listen(port, () => {
 });
 
 app.post("/register", async (req, res) => {
-  const user = req.body as AppUser;
+  console.log("Calling /register endpoint");
 
+  const { user }: { user: AppUser } = req.body;
   try {
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -37,11 +38,14 @@ app.post("/register", async (req, res) => {
     });
 
     if (existingUser) {
+      console.log("user exists!!!!!");
       return res.status(400).json({ error: "User already registered" });
     }
 
     // Create the user
     const addedUser = await createUser(user);
+    console.log(addedUser);
+
     res.json(addedUser);
   } catch (error) {
     res.status(500).json({ error: JSON.stringify(error) });
@@ -49,10 +53,13 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/addPlaylistForNotify", async (req, res) => {
-  const { playlistId, playlist, user } = req.body;
+  console.log("Calling /addPlaylistForNotify endpoint");
+
+  const { playlistId, tracks, userId } = req.body;
+  console.log(req.body);
 
   try {
-    const playlistTrackIDs: string[] = playlist.items
+    const playlistTrackIDs: string[] = tracks
       .map((item: PlaylistItem) => {
         if (item.track.id !== null && item.track.id !== undefined) {
           return item.track.id;
@@ -61,9 +68,9 @@ app.post("/addPlaylistForNotify", async (req, res) => {
       .filter((id: string) => id !== undefined);
 
     const addPlaylist = {
-      id: playlistId + user,
+      id: playlistId + userId,
       playlistId: playlistId,
-      userId: user,
+      userId: userId,
       trackIds: playlistTrackIDs,
       last_update: new Date(),
     };
@@ -78,10 +85,14 @@ app.post("/addPlaylistForNotify", async (req, res) => {
 });
 
 app.post("/getUserPlaylistsForNotify", async (req, res) => {
-  const { user } = req.body;
+  console.log("Calling /getUserPlaylistsForNotify endpoint");
+
+  const { userId } = req.body;
+  console.log(userId);
 
   try {
-    const playlists = await getPlaylists(user);
+    const playlists = await getPlaylists(userId);
+    console.log(playlists);
 
     res.status(200).json(playlists);
   } catch (error) {
@@ -90,6 +101,8 @@ app.post("/getUserPlaylistsForNotify", async (req, res) => {
 });
 
 app.post("/updateUserPlaylistsForNotify", async (req, res) => {
+  console.log("Calling /updateUserPlaylistsForNotify endpoint");
+
   const { playlistId, playlist, userId, last_update } = req.body;
 
   try {
@@ -108,7 +121,6 @@ app.post("/updateUserPlaylistsForNotify", async (req, res) => {
       last_update: last_update,
     } as UpdatePlaylist;
 
-
     const updatedPlaylist = await updatePlaylists(
       playlistId + userId,
       updatePlaylistItem
@@ -123,6 +135,8 @@ app.post("/updateUserPlaylistsForNotify", async (req, res) => {
 });
 
 app.post("/isSavedPlaylistsForNotify", async (req, res) => {
+  console.log("Calling /isSavedPlaylistsForNotify endpoint");
+
   const { playlistId, userId } = req.body;
 
   try {
@@ -135,6 +149,8 @@ app.post("/isSavedPlaylistsForNotify", async (req, res) => {
 });
 
 app.post("/deleteUserPlaylistsForNotify", async (req, res) => {
+  console.log("Calling /deleteUserPlaylistsForNotify endpoint");
+
   const { playlistId, userId } = req.body;
 
   try {
