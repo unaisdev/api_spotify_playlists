@@ -14,16 +14,16 @@ model User {
   id            String     @id @map("_id")
   display_name  String
   followers_num String
-  image         String
+  image         String     @default("https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y&s=300")
   uri           String
   Playlist      Playlist[]
 }
 
 model Playlist {
-  id          String   @id  @map("_id") 
+  id          String   @id @map("_id")
   playlistId  String
   trackIds    String[]
   last_update DateTime
   user        User     @relation(fields: [userId], references: [id])
-  userId      String   
+  userId      String
 }
