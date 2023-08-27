@@ -48,7 +48,11 @@ app.post("/register", async (req, res) => {
 
     res.json(addedUser);
   } catch (error) {
-    res.status(500).json({ error: JSON.stringify(error) });
+    res
+      .status(500)
+      .json({
+        error: JSON.stringify("The user couldn't be registered on BBDD"),
+      });
   }
 });
 
