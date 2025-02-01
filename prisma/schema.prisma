@@ -6,12 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            String     @id @map("_id")
+  id            String     @unique @map("_id")
   display_name  String
   followers_num String
   image         String     @default("https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y&s=300")

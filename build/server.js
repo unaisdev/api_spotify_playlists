@@ -31,23 +31,30 @@ app.listen(port, () => {
 app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Calling /register endpoint");
     const { user } = req.body;
+    console.log({ user: user.id });
     try {
         // Check if user already exists
-        const existingUser = yield prisma.user.findUnique({
+        const existingUser = yield prisma.user
+            .findUnique({
             where: {
                 id: user.id,
             },
+        })
+            .catch((e) => {
+            console.log(e);
         });
         if (existingUser) {
             console.log("user exists!!!!!");
             return res.status(400).json({ error: "User already registered" });
         }
+        console.log({ user });
         // Create the user
         const addedUser = yield (0, User_1.createUser)(user);
         console.log(addedUser);
         res.json(addedUser);
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ error: JSON.stringify(error) });
     }
 }));

@@ -29,30 +29,32 @@ app.post("/register", async (req, res) => {
   console.log("Calling /register endpoint");
 
   const { user }: { user: AppUser } = req.body;
+  console.log({ user: user.id });
   try {
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        id: user.id,
-      },
-    });
+    const existingUser = await prisma.user
+      .findUnique({
+        where: {
+          id: user.id,
+        },
+      })
+      .catch((e) => {
+        console.log(e);
+      });
 
     if (existingUser) {
       console.log("user exists!!!!!");
       return res.status(400).json({ error: "User already registered" });
     }
-
+    console.log({ user });
     // Create the user
     const addedUser = await createUser(user);
     console.log(addedUser);
 
     res.json(addedUser);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: JSON.stringify("The user couldn't be registered on BBDD"),
-      });
+    console.log(error);
+    res.status(500).json({ error: JSON.stringify(error) });
   }
 });
 
