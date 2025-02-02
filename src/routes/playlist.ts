@@ -9,7 +9,7 @@ import {
 import NodeCache from "node-cache";
 
 const router = Router();
-const cache = new NodeCache({ stdTTL: 600 });
+// const cache = new NodeCache({ stdTTL: 600 });
 
 router.post("/add", async (req: Request, res: Response) => {
   console.log("Calling /addPlaylistForNotify endpoint");
@@ -37,20 +37,20 @@ router.post("/add", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/getUserPlaylists", async (req: Request, res: Response) => {
+router.post("/getAll", async (req: Request, res: Response) => {
   console.log("Calling /getUserPlaylistsForNotify endpoint");
 
   const { userId } = req.body;
 
   // Verificar caché
-  const cachedPlaylists = cache.get(`playlists-${userId}`);
-  if (cachedPlaylists) {
-    return res.status(200).json(cachedPlaylists);
-  }
+  // const cachedPlaylists = cache.get(`playlists-${userId}`);
+  // if (cachedPlaylists) {
+  //   return res.status(200).json(cachedPlaylists);
+  // }
 
   try {
     const playlists = await getPlaylists(userId);
-    cache.set(`playlists-${userId}`, playlists);
+    // cache.set(`playlists-${userId}`, playlists);
     res.status(200).json(playlists);
   } catch (error) {
     res.status(500).json({ error: JSON.stringify(error) });
@@ -79,7 +79,7 @@ router.post("/update", async (req: Request, res: Response) => {
       updatePlaylistItem
     );
 
-    cache.del(`playlists-${userId}`); // Limpiar caché
+    // cache.del(`playlists-${userId}`); // Limpiar caché
     res.json(updatedPlaylist);
   } catch (error) {
     console.error(error);
@@ -94,8 +94,22 @@ router.post("/delete", async (req: Request, res: Response) => {
 
   try {
     const deleted = await deletePlaylists(playlistId, userId);
-    cache.del(`playlists-${userId}`); // Limpiar caché
+    // cache.del(`playlists-${userId}`); // Limpiar caché
     res.status(200).json(deleted);
+  } catch (error) {
+    res.status(500).json({ error: JSON.stringify(error) });
+  }
+});
+
+router.post("/saved", async (req, res) => {
+  console.log("Calling /isSavedPlaylistsForNotify endpoint");
+
+  const { playlistId, userId } = req.body;
+
+  try {
+    const isSaved = await isPlaylistAdded(playlistId, userId);
+
+    res.status(200).json(isSaved);
   } catch (error) {
     res.status(500).json({ error: JSON.stringify(error) });
   }

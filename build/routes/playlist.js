@@ -8,15 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Playlist_1 = require("../models/Playlist");
-const node_cache_1 = __importDefault(require("node-cache"));
 const router = (0, express_1.Router)();
-const cache = new node_cache_1.default({ stdTTL: 600 });
+// const cache = new NodeCache({ stdTTL: 600 });
 router.post("/add", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Calling /addPlaylistForNotify endpoint");
     const { playlistId, tracks, userId } = req.body;
@@ -39,17 +35,17 @@ router.post("/add", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ error: JSON.stringify(error) });
     }
 }));
-router.post("/getUserPlaylists", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getAll", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Calling /getUserPlaylistsForNotify endpoint");
     const { userId } = req.body;
     // Verificar caché
-    const cachedPlaylists = cache.get(`playlists-${userId}`);
-    if (cachedPlaylists) {
-        return res.status(200).json(cachedPlaylists);
-    }
+    // const cachedPlaylists = cache.get(`playlists-${userId}`);
+    // if (cachedPlaylists) {
+    //   return res.status(200).json(cachedPlaylists);
+    // }
     try {
         const playlists = yield (0, Playlist_1.getPlaylists)(userId);
-        cache.set(`playlists-${userId}`, playlists);
+        // cache.set(`playlists-${userId}`, playlists);
         res.status(200).json(playlists);
     }
     catch (error) {
@@ -70,7 +66,7 @@ router.post("/update", (req, res) => __awaiter(void 0, void 0, void 0, function*
             last_update,
         };
         const updatedPlaylist = yield (0, Playlist_1.updatePlaylists)(playlistId + userId, updatePlaylistItem);
-        cache.del(`playlists-${userId}`); // Limpiar caché
+        // cache.del(`playlists-${userId}`); // Limpiar caché
         res.json(updatedPlaylist);
     }
     catch (error) {
@@ -83,8 +79,19 @@ router.post("/delete", (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { playlistId, userId } = req.body;
     try {
         const deleted = yield (0, Playlist_1.deletePlaylists)(playlistId, userId);
-        cache.del(`playlists-${userId}`); // Limpiar caché
+        // cache.del(`playlists-${userId}`); // Limpiar caché
         res.status(200).json(deleted);
+    }
+    catch (error) {
+        res.status(500).json({ error: JSON.stringify(error) });
+    }
+}));
+router.post("/saved", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Calling /isSavedPlaylistsForNotify endpoint");
+    const { playlistId, userId } = req.body;
+    try {
+        const isSaved = yield (0, Playlist_1.isPlaylistAdded)(playlistId, userId);
+        res.status(200).json(isSaved);
     }
     catch (error) {
         res.status(500).json({ error: JSON.stringify(error) });
