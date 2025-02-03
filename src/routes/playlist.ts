@@ -7,6 +7,8 @@ import {
   updatePlaylists,
 } from "../models/Playlist";
 import NodeCache from "node-cache";
+import { PlaylistValidationService } from "../services/playlistValidation";
+import { PlaylistTrack, PlaylistData } from "../types/playlist";
 
 const router = Router();
 // const cache = new NodeCache({ stdTTL: 600 });
@@ -17,11 +19,18 @@ router.post("/add", async (req: Request, res: Response) => {
   const { playlistId, tracks, userId } = req.body;
 
   try {
+    // Validate playlist addition
+    const validationError =
+      await PlaylistValidationService.validatePlaylistAddition(userId, tracks);
+    if (validationError) {
+      return res.status(400).json(validationError);
+    }
+
     const playlistTrackIDs: string[] = tracks
-      .map((item: any) => item.track?.id)
+      .map((item: PlaylistTrack) => item.track?.id)
       .filter((id: string | undefined) => id !== undefined) as string[];
 
-    const addPlaylist = {
+    const addPlaylist: PlaylistData = {
       id: playlistId + userId,
       playlistId,
       userId,
