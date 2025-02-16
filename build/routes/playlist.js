@@ -11,12 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Playlist_1 = require("../models/Playlist");
+const playlistValidation_1 = require("../services/playlistValidation");
 const router = (0, express_1.Router)();
 // const cache = new NodeCache({ stdTTL: 600 });
 router.post("/add", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Calling /addPlaylistForNotify endpoint");
     const { playlistId, tracks, userId } = req.body;
     try {
+        // Validate playlist addition
+        const validationError = yield playlistValidation_1.PlaylistValidationService.validatePlaylistAddition(userId, tracks);
+        if (validationError) {
+            return res.status(400).json(validationError);
+        }
         const playlistTrackIDs = tracks
             .map((item) => { var _a; return (_a = item.track) === null || _a === void 0 ? void 0 : _a.id; })
             .filter((id) => id !== undefined);
